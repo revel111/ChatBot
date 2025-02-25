@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: Chatbot
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/chat-bot}
+    username: ${POSTGRES_USER:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  jpa:
+    hibernate:
+      ddl-auto: none
+app:
+  security:
+    secret: ${JWT_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333}
+    expiration: 60000
