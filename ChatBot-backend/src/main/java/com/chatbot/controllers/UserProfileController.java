@@ -1,6 +1,7 @@
 package com.chatbot.controllers;
 
 import com.chatbot.controllers.dto.response.UserProfileDto;
+import com.chatbot.security.contexts.AuthContextHolder;
 import com.chatbot.services.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ public class UserProfileController {
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileDto> getUserProfile() {
-
+        var authContext = AuthContextHolder.get();
+        return ResponseEntity.ok(userProfileService.getInfo(authContext));
     }
 }

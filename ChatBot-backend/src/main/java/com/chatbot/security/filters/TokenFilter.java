@@ -2,6 +2,9 @@ package com.chatbot.security.filters;
 
 import com.chatbot.exceptions.UnauthorizedException;
 import com.chatbot.security.JwtCore;
+import com.chatbot.security.UserProfileDetails;
+import com.chatbot.security.contexts.AuthContext;
+import com.chatbot.security.contexts.AuthContextHolder;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -43,9 +45,11 @@ public class TokenFilter extends OncePerRequestFilter {
                 }
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    var userProfileDetails = (UserProfileDetails) userDetailsService.loadUserByUsername(username);
+                    var authenticationToken = new UsernamePasswordAuthenticationToken(userProfileDetails, null, userProfileDetails.getAuthorities());
+
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getUsername(), userProfileDetails.getEmail()));
                 }
             }
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
 
 @Component
@@ -17,14 +18,15 @@ public class JwtCore {
     private String secret;
 
     @Value("${app.security.expiration}")
-    private long lifetime;
+    private long lifetimeInSeconds;
 
     public String generateToken(Authentication authentication) {
         var userProfileDetails = (UserProfileDetails) authentication.getPrincipal();
+        Instant now = Instant.now();
         return Jwts.builder()
                 .subject(userProfileDetails.getEmail())
-                .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + lifetime))
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(lifetimeInSeconds)))
                 .signWith(generateKey())
                 .compact();
     }

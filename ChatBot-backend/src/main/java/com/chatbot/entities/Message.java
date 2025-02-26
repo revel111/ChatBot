@@ -2,13 +2,17 @@ package com.chatbot.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,6 +30,13 @@ public class Message {
 
     @Column(nullable = false)
     private String text;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Chat chat;
+
+    @CreationTimestamp
+    @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+    private Instant createdAt;
 
     @Override
     public boolean equals(Object o) {

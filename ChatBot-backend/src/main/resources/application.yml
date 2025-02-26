@@ -7,8 +7,10 @@ spring:
     password: ${POSTGRES_PASSWORD:admin}
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
+  jackson:
+    time-zone: UTC
 app:
   security:
     secret: ${JWT_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333}
-    expiration: 60000
+    expiration: 3600

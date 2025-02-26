@@ -2,14 +2,18 @@ package com.chatbot.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,8 +39,16 @@ public class UserProfile {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany
+    @OneToMany(mappedBy = "userProfile", fetch = FetchType.EAGER)
     private List<Chat> chats;
+
+    @CreationTimestamp
+    @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(columnDefinition = "TIMESTAMP", nullable = false)
+    private Instant updatedAt;
 
     @Override
     public boolean equals(Object o) {

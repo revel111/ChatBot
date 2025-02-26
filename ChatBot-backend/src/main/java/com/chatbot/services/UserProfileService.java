@@ -3,11 +3,15 @@ package com.chatbot.services;
 import com.chatbot.controllers.dto.request.SignInRequestDto;
 import com.chatbot.controllers.dto.request.SignUpRequestDto;
 import com.chatbot.controllers.dto.response.JwtTokenResponse;
+import com.chatbot.controllers.dto.response.UserProfileDto;
+import com.chatbot.entities.UserProfile;
 import com.chatbot.exceptions.UnauthorizedException;
+import com.chatbot.exceptions.UserNotFoundException;
 import com.chatbot.exceptions.UserProfileExistsException;
 import com.chatbot.mappers.EntityMapper;
 import com.chatbot.repositories.UserProfileRepository;
 import com.chatbot.security.JwtCore;
+import com.chatbot.security.contexts.AuthContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +49,6 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
-    @Transactional
     public JwtTokenResponse signIn(SignInRequestDto signInRequestDto) {
         Authentication authentication;
 
@@ -55,5 +60,13 @@ public class UserProfileService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return new JwtTokenResponse(jwtCore.generateToken(authentication));
+    }
+
+    public UserProfileDto getInfo(AuthContext authContext) {
+        return entityMapper.toUserProfileDto(authContext);
+    }
+
+    public UserProfile getById(UUID userId) {
+        return userProfileRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 }

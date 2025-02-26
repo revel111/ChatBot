@@ -1,15 +1,20 @@
 package com.chatbot.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,8 +35,15 @@ public class Chat {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Message> messages = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private UserProfile userProfile;
+
+    @CreationTimestamp
+    @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+    private Instant createdAt;
 
     @Override
     public boolean equals(Object o) {
