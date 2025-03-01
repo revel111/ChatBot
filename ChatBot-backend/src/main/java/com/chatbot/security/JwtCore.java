@@ -42,7 +42,7 @@ public class JwtCore {
                         accessExpirationTime
                 ),
                 userProfileDetails.getId(),
-                userProfileDetails.getUsername(),
+                userProfileDetails.getRealUsername(),
                 userProfileDetails.getEmail()
         );
     }

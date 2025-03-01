@@ -38,6 +38,10 @@ public class UserProfileDetails implements UserDetails {
         return email;
     }
 
+    public String getRealUsername() {
+        return username;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

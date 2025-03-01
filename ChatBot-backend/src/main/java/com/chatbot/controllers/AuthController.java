@@ -4,6 +4,7 @@ import com.chatbot.controllers.dto.request.SignInRequestDto;
 import com.chatbot.controllers.dto.request.SignUpRequestDto;
 import com.chatbot.controllers.dto.response.AuthDataResponse;
 import com.chatbot.services.UserProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class AuthController {
     private final UserProfileService userProfileService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<AuthDataResponse> signIn(@Valid @RequestBody SignInRequestDto signInRequestDto) {
+    public ResponseEntity<AuthDataResponse> signIn(@RequestBody SignInRequestDto signInRequestDto) {
         return ResponseEntity.ok(userProfileService.signIn(signInRequestDto));
     }
 

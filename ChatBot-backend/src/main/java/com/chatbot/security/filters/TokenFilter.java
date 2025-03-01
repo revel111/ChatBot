@@ -49,7 +49,7 @@ public class TokenFilter extends OncePerRequestFilter {
                     var authenticationToken = new UsernamePasswordAuthenticationToken(userProfileDetails, null, userProfileDetails.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getUsername(), userProfileDetails.getEmail()));
+                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getRealUsername(), userProfileDetails.getEmail()));
                 }
             }
         } catch (Exception e) {

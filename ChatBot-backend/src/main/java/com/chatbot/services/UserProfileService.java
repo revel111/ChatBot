@@ -117,4 +117,12 @@ public class UserProfileService {
     public UserProfile getById(UUID userId) {
         return userProfileRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
+
+    @Transactional
+    public void deleteById(UUID userId) {
+        userProfileRepository.deleteById(userId);
+        userProfileTokenRepository.deleteById(userId);
+    }
+
+
 }

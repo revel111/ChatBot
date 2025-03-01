@@ -1,5 +1,6 @@
 package com.chatbot.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,7 +40,7 @@ public class UserProfile {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "userProfile", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "userProfile", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Chat> chats;
 
     @CreationTimestamp

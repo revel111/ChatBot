@@ -7,6 +7,7 @@ import com.chatbot.security.annotations.OwnerProtectedOperation;
 import com.chatbot.security.contexts.AuthContextHolder;
 import com.chatbot.services.ChatService;
 import com.chatbot.services.MessageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,9 +41,9 @@ public class ChatController {
 
     @PostMapping
     @OwnerProtectedOperation
-    public ResponseEntity<MessageDto> sendMessageAndCreateChatIfNotExist(@RequestBody SendMessageDto sendMessageDto) {
+    public ResponseEntity<MessageDto> sendMessageAndCreateChatIfNotExist(@Valid @RequestBody SendMessageDto sendMessageDto) {
         var userId = AuthContextHolder.get().id();
-        return ResponseEntity.ok(chatService.sendMessageAndCreateChatIfNotExist(sendMessageDto.chatId(), sendMessageDto, userId));
+        return ResponseEntity.ok(chatService.sendMessageAndCreateChatIfNotExist(sendMessageDto, userId));
     }
 
     @GetMapping("/{chatId}/messages")

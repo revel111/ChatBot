@@ -37,10 +37,10 @@ public class ChatService {
         return chatRepository.existsByIdAndUserProfileId(chatId, userId);
     }
 
-    public MessageDto sendMessageAndCreateChatIfNotExist(UUID chatId, SendMessageDto sendMessageDto, UUID userId) {
+    public MessageDto sendMessageAndCreateChatIfNotExist(SendMessageDto sendMessageDto, UUID userId) {
         Optional<Chat> chat = Optional.empty();
-        if (chatId != null)
-            chat = chatRepository.findById(chatId);
+        if (sendMessageDto.chatId() != null)
+            chat = chatRepository.findById(sendMessageDto.chatId());
 
         var message = new Message();
         var botAnswer = new Message();
