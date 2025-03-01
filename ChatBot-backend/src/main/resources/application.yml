@@ -12,5 +12,7 @@ spring:
     time-zone: UTC
 app:
   security:
-    secret: ${JWT_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333}
-    expiration: 3600
+    access_secret: ${JWT_ACCESS_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333}
+    refresh_secret: ${JWT_REFRESH_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333SECRET}
+    access_expiration: 3600 #seconds
+    refresh_expiration: 2592000 #seconds
