@@ -2,7 +2,7 @@ spring:
   application:
     name: Chatbot
   datasource:
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/chat-bot}
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5434/chat-bot}
     username: ${POSTGRES_USER:admin}
     password: ${POSTGRES_PASSWORD:admin}
   jpa:
@@ -21,6 +21,6 @@ langchain4j:
     #    chat-model:
     streaming-chat-model:
       api-key: ${OPENAI_API_KEY}
-      model-name: gpt-4o
-      log-requests: true
-      log-responses: true
+#      model-name: gpt-4o
+#      log-requests: true
+#      log-responses: true
