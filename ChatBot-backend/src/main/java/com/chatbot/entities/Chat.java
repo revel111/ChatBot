@@ -8,16 +8,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -25,11 +26,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Chat {
 
     @Id
     @UuidGenerator
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private UUID id;
 
     @Column(nullable = false)
@@ -45,23 +50,4 @@ public class Chat {
     @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Chat chat = (Chat) o;
-        return Objects.equals(id, chat.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Chat{" +
-                "id=" + id +
-                '}';
-    }
 }

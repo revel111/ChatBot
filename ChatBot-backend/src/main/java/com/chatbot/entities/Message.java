@@ -6,14 +6,15 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -21,11 +22,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Message {
 
     @Id
     @UuidGenerator
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private UUID id;
 
     @Column(nullable = false)
@@ -38,23 +43,4 @@ public class Message {
     @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return Objects.equals(id, message.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id=" + id +
-                '}';
-    }
 }

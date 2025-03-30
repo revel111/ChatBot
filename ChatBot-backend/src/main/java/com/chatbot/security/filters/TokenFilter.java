@@ -1,6 +1,5 @@
 package com.chatbot.security.filters;
 
-import com.chatbot.exceptions.UnauthorizedException;
 import com.chatbot.security.JwtCore;
 import com.chatbot.security.UserProfileDetails;
 import com.chatbot.security.contexts.AuthContext;
@@ -41,7 +40,9 @@ public class TokenFilter extends OncePerRequestFilter {
                 try {
                     username = jwtCore.getUsernameFromJwt(jwt);
                 } catch (ExpiredJwtException e) {
-                    throw new UnauthorizedException();
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Unauthorized");
+                    return;
                 }
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -53,10 +54,16 @@ public class TokenFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            throw new UnauthorizedException();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unauthorized");
+            return;
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            AuthContextHolder.remove();
+        }
     }
 
 }

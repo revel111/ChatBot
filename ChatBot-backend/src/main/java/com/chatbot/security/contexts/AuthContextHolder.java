@@ -1,6 +1,6 @@
 package com.chatbot.security.contexts;
 
-public class AuthContextHolder {
+public final class AuthContextHolder {
 
     private static final ThreadLocal<AuthContext> contextHolder = new ThreadLocal<>();
 
