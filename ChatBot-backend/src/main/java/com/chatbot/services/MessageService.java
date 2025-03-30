@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class MessageService {
         return messageRepository.findAllByChatId(chatId, pageable).map(entityMapper::toMessageDto);
     }
 
+    @Transactional
     public MessageDto createMessage(Message message) {
         return entityMapper.toMessageDto(messageRepository.save(message));
     }

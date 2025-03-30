@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -37,6 +38,7 @@ public class ChatService {
         return chatRepository.existsByIdAndUserProfileId(chatId, userId);
     }
 
+    @Transactional
     public MessageDto sendMessageAndCreateChatIfNotExist(SendMessageDto sendMessageDto, UUID userId) {
         Optional<Chat> chat = Optional.empty();
         if (sendMessageDto.chatId() != null)
@@ -65,6 +67,7 @@ public class ChatService {
         return messageService.createMessage(botAnswer);
     }
 
+    @Transactional
     public void deleteById(UUID chatId) {
         chatRepository.deleteById(chatId);
     }

@@ -7,7 +7,6 @@ import com.chatbot.controllers.dto.response.UserProfileDto;
 import com.chatbot.entities.Chat;
 import com.chatbot.entities.Message;
 import com.chatbot.entities.UserProfile;
-import com.chatbot.security.contexts.AuthContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -21,7 +20,7 @@ public interface EntityMapper {
     @Mapping(target = "updatedAt", ignore = true)
     UserProfile toUserProfile(SignUpRequestDto signUpRequestDto);
 
-    UserProfileDto toUserProfileDto(AuthContext authContext);
+    UserProfileDto toUserProfileDto(UserProfile userProfile);
 
     ChatDto toChatDto(Chat chat);
 
