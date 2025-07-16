@@ -8,16 +8,12 @@ import com.chatbot.controllers.dto.response.AuthDataResponse;
 import com.chatbot.controllers.dto.response.UserProfileDto;
 import com.chatbot.entities.UserProfile;
 import com.chatbot.entities.UserProfileToken;
-import com.chatbot.exceptions.InvalidRefreshTokenException;
-import com.chatbot.exceptions.PasswordsNotMatchException;
-import com.chatbot.exceptions.UnauthorizedException;
-import com.chatbot.exceptions.UserNotFoundException;
-import com.chatbot.exceptions.UserProfileExistsException;
 import com.chatbot.mappers.EntityMapper;
 import com.chatbot.repositories.UserProfileRepository;
 import com.chatbot.repositories.UserProfileTokenRepository;
 import com.chatbot.security.JwtCore;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -47,11 +44,11 @@ public class UserProfileService {
     @Transactional
     public AuthDataResponse signUp(SignUpRequestDto signUpRequestDto) {
         userProfileRepository.findByEmail(signUpRequestDto.email()).ifPresent(user -> {
-            throw new UserProfileExistsException();
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists.");
         });
 
         if (!signUpRequestDto.password().equals(signUpRequestDto.confirmPassword()))
-            throw new PasswordsNotMatchException();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match.");
 
         var userProfile = entityMapper.toUserProfile(signUpRequestDto);
         userProfile.setPassword(passwordEncoder.encode(signUpRequestDto.password()));
@@ -61,10 +58,9 @@ public class UserProfileService {
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signUpRequestDto.email(), signUpRequestDto.password()));
         } catch (AuthenticationException e) {
-            throw new UnauthorizedException();
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized operation");
         }
 
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
         var authDataResponse = jwtCore.generateTokens(authentication);
         userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken()));
         return authDataResponse;
@@ -77,9 +73,10 @@ public class UserProfileService {
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDto.email(), signInRequestDto.password()));
         } catch (AuthenticationException e) {
-            throw new UnauthorizedException();
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized operation");
         }
-        var userProfile = userProfileRepository.findByEmail(signInRequestDto.email()).orElseThrow(UserNotFoundException::new);
+
+        var userProfile = userProfileRepository.findByEmail(signInRequestDto.email()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         var authDataResponse = jwtCore.generateTokens(authentication);
 
         userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken()));
@@ -87,27 +84,27 @@ public class UserProfileService {
     }
 
     @Transactional
-    public void logOut(String refreshToken) {
+    public void logout(String refreshToken) {
         if (refreshToken != null && !refreshToken.startsWith("Bearer "))
             userProfileTokenRepository.deleteByToken(refreshToken.substring(7));
         else
-            throw new InvalidRefreshTokenException();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid refresh token");
     }
 
     @Transactional
     public AuthDataResponse refresh(String refreshToken) {
         if (refreshToken == null || !refreshToken.startsWith("Bearer "))
-            throw new InvalidRefreshTokenException();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid refresh token");
 
         String token = refreshToken.substring(7);
-        var userProfileToken = userProfileTokenRepository.findByToken(token).orElseThrow(UnauthorizedException::new);
+        var userProfileToken = userProfileTokenRepository.findByToken(token).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized operation"));
         var userProfile = getById(userProfileToken.getId());
         Authentication authentication;
 
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userProfile.getEmail(), userProfile.getPassword()));
         } catch (AuthenticationException e) {
-            throw new UnauthorizedException();
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized operation");
         }
 
         var authDataResponse = jwtCore.generateTokens(authentication);
@@ -121,7 +118,7 @@ public class UserProfileService {
     }
 
     public UserProfile getById(UUID userId) {
-        return userProfileRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return userProfileRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @Transactional
@@ -132,16 +129,16 @@ public class UserProfileService {
 
     // ? send new tokens & info
     @Transactional
-    public UserProfileDto updateProfile(UpdateUserProfileDto signUpRequestDto, UUID userId) {
+    public UserProfileDto updateProfile(UpdateUserProfileDto updateUserProfileDto, UUID userId) {
         var userProfile = getById(userId);
 
-        if (!userProfile.getEmail().equals(signUpRequestDto.email()))
-            userProfileRepository.findByEmail(signUpRequestDto.email()).ifPresent(user -> {
-                throw new UserProfileExistsException();
+        if (!userProfile.getEmail().equals(updateUserProfileDto.email()))
+            userProfileRepository.findByEmail(updateUserProfileDto.email()).ifPresent(user -> {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists.");
             });
 
-        userProfile.setEmail(signUpRequestDto.email());
-        userProfile.setUsername(signUpRequestDto.username());
+        userProfile.setEmail(updateUserProfileDto.email());
+        userProfile.setUsername(updateUserProfileDto.username());
 
         return entityMapper.toUserProfileDto(userProfileRepository.save(userProfile));
     }
@@ -152,10 +149,10 @@ public class UserProfileService {
         var userProfile = getById(userId);
 
         if (!passwordEncoder.matches(changePasswordDto.oldPassword(), userProfile.getPassword()))
-            throw new UnauthorizedException();
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized operation");
 
         if (!changePasswordDto.newPassword().equals(changePasswordDto.confirmPassword()))
-            throw new PasswordsNotMatchException();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match.");
 
         userProfile.setPassword(passwordEncoder.encode(changePasswordDto.newPassword()));
         userProfileRepository.save(userProfile);

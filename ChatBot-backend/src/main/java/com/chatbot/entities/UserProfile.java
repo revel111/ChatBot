@@ -17,7 +17,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -45,8 +46,8 @@ public class UserProfile {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "userProfile", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Chat> chats;
+    @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Set<Chat> chats = new HashSet<>();
 
     @CreationTimestamp
     @Column(columnDefinition = "TIMESTAMP", nullable = false, updatable = false)

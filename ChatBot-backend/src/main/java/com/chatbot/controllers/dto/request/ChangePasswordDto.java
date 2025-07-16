@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record ChangePasswordDto(
+        @NotNull
         String oldPassword,
 
         @NotNull
@@ -12,6 +13,7 @@ public record ChangePasswordDto(
         @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$")
         String newPassword,
 
+        @NotNull
         String confirmPassword
 ) {
 }

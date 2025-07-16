@@ -32,14 +32,14 @@ public class AuthController {
         return ResponseEntity.ok(userProfileService.signUp(signUpRequestDto));
     }
 
-    @PostMapping("/log-out")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String refreshToken) {
-        userProfileService.logOut(refreshToken);
-        return ResponseEntity.ok(null);
-    }
-
     @GetMapping("/refresh")
     public ResponseEntity<AuthDataResponse> refresh(@RequestHeader("Authorization") String refreshToken) {
         return ResponseEntity.ok(userProfileService.refresh(refreshToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String accessToken) {
+        userProfileService.logout(accessToken);
+        return ResponseEntity.noContent().build();
     }
 }

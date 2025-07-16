@@ -2,10 +2,11 @@ package com.chatbot.security;
 
 import com.chatbot.controllers.dto.response.AuthDataResponse;
 import com.chatbot.controllers.dto.response.JwtTokens;
+import com.chatbot.properties.SecurityProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -14,31 +15,22 @@ import java.time.Instant;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtCore {
 
-    @Value("${app.security.access_secret}")
-    private String accessSecret;
-
-    @Value("${app.security.refresh_secret}")
-    private String refreshSecret;
-
-    @Value("${app.security.access_expiration}")
-    private long accessTokenLifetimeInSeconds;
-
-    @Value("${app.security.refresh_expiration}")
-    private long refreshTokenLifetimeInSeconds;
+    private final SecurityProperties securityProperties;
 
     public AuthDataResponse generateTokens(Authentication authentication) {
         var userProfileDetails = (UserProfileDetails) authentication.getPrincipal();
 
         var instantNow = Instant.now();
-        var accessExpirationTime = instantNow.plusSeconds(accessTokenLifetimeInSeconds);
-        var refreshExpirationTime = instantNow.plusSeconds(refreshTokenLifetimeInSeconds);
+        var accessExpirationTime = instantNow.plusSeconds(securityProperties.getAccessExpiration());
+        var refreshExpirationTime = instantNow.plusSeconds(securityProperties.getRefreshExpiration());
 
         return new AuthDataResponse(
                 new JwtTokens(
-                        generateToken(accessSecret, userProfileDetails, accessExpirationTime),
-                        generateToken(refreshSecret, userProfileDetails, refreshExpirationTime),
+                        this.generateToken(securityProperties.getAccessSecret(), userProfileDetails, accessExpirationTime),
+                        this.generateToken(securityProperties.getRefreshSecret(), userProfileDetails, refreshExpirationTime),
                         accessExpirationTime
                 ),
                 userProfileDetails.getId(),
@@ -55,13 +47,13 @@ public class JwtCore {
                 .claim("id", userProfileDetails.getId())
                 .claim("username", userProfileDetails.getUsername())
                 .claim("email", userProfileDetails.getEmail())
-                .signWith(generateKey(secret))
+                .signWith(this.generateKey(secret))
                 .compact();
     }
 
     public String getUsernameFromJwt(String token) {
         return Jwts.parser()
-                .verifyWith(generateKey(accessSecret))
+                .verifyWith(this.generateKey(securityProperties.getAccessSecret()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()

@@ -19,6 +19,7 @@ public record SignUpRequestDto(
         @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$")
         String password,
 
+        @NotNull
         String confirmPassword
 ) {
 }

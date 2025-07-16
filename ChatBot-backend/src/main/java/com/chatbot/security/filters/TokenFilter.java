@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -49,8 +50,14 @@ public class TokenFilter extends OncePerRequestFilter {
                     var userProfileDetails = (UserProfileDetails) userDetailsService.loadUserByUsername(username);
                     var authenticationToken = new UsernamePasswordAuthenticationToken(userProfileDetails, null, userProfileDetails.getAuthorities());
 
+                    UUID spaceId = null;
+                    try {
+                        spaceId = UUID.fromString(request.getHeader("x-space-id"));
+                    } catch (IllegalArgumentException | NullPointerException ignored) {
+                    }
+
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getRealUsername(), userProfileDetails.getEmail()));
+                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getRealUsername(), userProfileDetails.getEmail(), spaceId));
                 }
             }
         } catch (Exception e) {

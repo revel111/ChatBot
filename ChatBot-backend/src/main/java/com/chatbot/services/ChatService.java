@@ -10,8 +10,10 @@ import com.chatbot.repositories.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -34,23 +36,23 @@ public class ChatService {
         return chatRepository.findAllByUserId(userId, pageable).map(entityMapper::toChatDto);
     }
 
-    public boolean isExist(UUID chatId, UUID userId) {
-        return chatRepository.existsByIdAndUserProfileId(chatId, userId);
+    public Optional<Chat> isExist(UUID chatId, UUID userId) {
+        return chatRepository.findByIdAndUserProfile_Id(chatId, userId);
     }
 
     @Transactional
-    public MessageDto sendMessageAndCreateChatIfNotExist(SendMessageDto sendMessageDto, UUID userId) {
-        Optional<Chat> chat = Optional.empty();
-        if (sendMessageDto.chatId() != null)
-            chat = chatRepository.findById(sendMessageDto.chatId());
+    public MessageDto sendMessage(SendMessageDto sendMessageDto, UUID userId, UUID chatId) {
+        Chat chat = null;
+        if (chatId != null)
+            chat = chatRepository.findById(chatId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
 
         var message = new Message();
         var botAnswer = new Message();
 
         message.setText(sendMessageDto.message());
-        if (chat.isPresent()) {
-            message.setChat(chat.get());
-            botAnswer.setChat(chat.get());
+        if (chat != null) {
+            message.setChat(chat);
+            botAnswer.setChat(chat);
         } else {
             var newChat = new Chat();
 

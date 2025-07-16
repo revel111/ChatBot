@@ -41,9 +41,9 @@ public class ChatController {
 
     @PostMapping
     @OwnerProtectedOperation
-    public ResponseEntity<MessageDto> sendMessageAndCreateChatIfNotExist(@Valid @RequestBody SendMessageDto sendMessageDto) {
-        var userId = AuthContextHolder.get().id();
-        return ResponseEntity.ok(chatService.sendMessageAndCreateChatIfNotExist(sendMessageDto, userId));
+    public ResponseEntity<MessageDto> sendMessage(@Valid @RequestBody SendMessageDto sendMessageDto) {
+        var context = AuthContextHolder.get();
+        return ResponseEntity.ok(chatService.sendMessage(sendMessageDto, context.id(), context.selectedChat()));
     }
 
     @GetMapping("/{chatId}/messages")
@@ -57,6 +57,6 @@ public class ChatController {
     @OwnerProtectedOperation
     public ResponseEntity<Void> deleteById(@PathVariable UUID chatId) {
         chatService.deleteById(chatId);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 }

@@ -32,7 +32,7 @@ public class UserProfileController {
     public ResponseEntity<Void> deleteById() {
         var userId = AuthContextHolder.get().id();
         userProfileService.deleteById(userId);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/me")
@@ -45,6 +45,6 @@ public class UserProfileController {
     public ResponseEntity<Void> updatePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto) {
         var userId = AuthContextHolder.get().id();
         userProfileService.updatePassword(changePasswordDto, userId);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 }

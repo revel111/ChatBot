@@ -5,6 +5,7 @@ import java.util.UUID;
 public record AuthContext(
         UUID id,
         String username,
-        String email
+        String email,
+        UUID selectedChat
 ) {
 }
