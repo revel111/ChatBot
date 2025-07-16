@@ -5,6 +5,7 @@ import java.time.Instant;
 public record JwtTokens(
         String accessToken,
         String refreshToken,
-        Instant expirationTime
+        Instant accessExpirationTime,
+        Instant refreshExpirationTime
 ) {
 }

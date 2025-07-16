@@ -4,6 +4,7 @@ import com.chatbot.entities.UserProfileToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,5 +14,7 @@ public interface UserProfileTokenRepository extends JpaRepository<UserProfileTok
     void deleteByToken(String token);
 
     Optional<UserProfileToken> findByToken(String token);
+
+    void deleteAllByExpirationDateBefore(Instant expirationDateAfter);
 
 }

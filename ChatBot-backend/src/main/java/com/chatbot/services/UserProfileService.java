@@ -14,6 +14,7 @@ import com.chatbot.repositories.UserProfileTokenRepository;
 import com.chatbot.security.JwtCore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -62,7 +64,7 @@ public class UserProfileService {
         }
 
         var authDataResponse = jwtCore.generateTokens(authentication);
-        userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken()));
+        userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken(), authDataResponse.jwtTokens().refreshExpirationTime()));
         return authDataResponse;
     }
 
@@ -79,7 +81,7 @@ public class UserProfileService {
         var userProfile = userProfileRepository.findByEmail(signInRequestDto.email()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         var authDataResponse = jwtCore.generateTokens(authentication);
 
-        userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken()));
+        userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken(), authDataResponse.jwtTokens().refreshExpirationTime()));
         return authDataResponse;
     }
 
@@ -109,7 +111,7 @@ public class UserProfileService {
 
         var authDataResponse = jwtCore.generateTokens(authentication);
 
-        userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken()));
+        userProfileTokenRepository.save(new UserProfileToken(userProfile.getId(), authDataResponse.jwtTokens().refreshToken(), authDataResponse.jwtTokens().refreshExpirationTime()));
         return authDataResponse;
     }
 
@@ -157,4 +159,12 @@ public class UserProfileService {
         userProfile.setPassword(passwordEncoder.encode(changePasswordDto.newPassword()));
         userProfileRepository.save(userProfile);
     }
+
+
+    @Scheduled(fixedDelay = 1000 * 60 * 60) // every hour
+    @Transactional
+    public void deleteExpiredTokens() {
+        userProfileTokenRepository.deleteAllByExpirationDateBefore(Instant.now());
+    }
+
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -29,5 +30,8 @@ public class UserProfileToken {
 
     @Column(nullable = false, length = 2048)
     private String token;
+
+    @Column(columnDefinition = "TIMESTAMP", nullable = false)
+    private Instant expirationDate;
 
 }

@@ -31,7 +31,8 @@ public class JwtCore {
                 new JwtTokens(
                         this.generateToken(securityProperties.getAccessSecret(), userProfileDetails, accessExpirationTime),
                         this.generateToken(securityProperties.getRefreshSecret(), userProfileDetails, refreshExpirationTime),
-                        accessExpirationTime
+                        accessExpirationTime,
+                        refreshExpirationTime
                 ),
                 userProfileDetails.getId(),
                 userProfileDetails.getRealUsername(),
