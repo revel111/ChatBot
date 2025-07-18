@@ -27,6 +27,8 @@ public class TokenFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
+    private static final String CHAT_ID_HEADER = "x-chat-id";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = null;
@@ -50,14 +52,14 @@ public class TokenFilter extends OncePerRequestFilter {
                     var userProfileDetails = (UserProfileDetails) userDetailsService.loadUserByUsername(username);
                     var authenticationToken = new UsernamePasswordAuthenticationToken(userProfileDetails, null, userProfileDetails.getAuthorities());
 
-                    UUID spaceId = null;
+                    UUID chatId = null;
                     try {
-                        spaceId = UUID.fromString(request.getHeader("x-space-id"));
+                        chatId = UUID.fromString(request.getHeader(CHAT_ID_HEADER));
                     } catch (IllegalArgumentException | NullPointerException ignored) {
                     }
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getRealUsername(), userProfileDetails.getEmail(), spaceId));
+                    AuthContextHolder.set(new AuthContext(userProfileDetails.getId(), userProfileDetails.getRealUsername(), userProfileDetails.getEmail(), chatId));
                 }
             }
         } catch (Exception e) {

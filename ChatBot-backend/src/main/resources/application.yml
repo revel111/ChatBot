@@ -21,11 +21,12 @@ app:
     refresh-secret: ${JWT_REFRESH_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333SECRET}
     access-expiration: 3600 #seconds
     refresh-expiration: 2592000 #seconds
-#langchain4j:
-#  open-ai:
-    #    chat-model:
+langchain4j:
+  open-ai:
+    chat-model:
 #    streaming-chat-model:
-#      api-key: ${OPENAI_API_KEY:}
-#      model-name: gpt-4o
-#      log-requests: true
-#      log-responses: true
+      api-key: ${OPENAI_API_KEY}
+      model-name: gpt-4o
+      log-requests: true
+      log-responses: true
+      max-tokens: 100

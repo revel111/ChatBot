@@ -1,5 +1,6 @@
 package com.chatbot.services;
 
+import dev.langchain4j.model.chat.ChatModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -7,10 +8,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BotService {
 
-//    private final ChatLanguageModel chatLanguageModel;
+    private final ChatModel chatModel;
 
     public String answer(String message) {
-//        return chatLanguageModel.chat(message);
-        return "answer";
+        return chatModel.chat(message);
     }
 }

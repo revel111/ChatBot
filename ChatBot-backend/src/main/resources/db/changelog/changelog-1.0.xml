@@ -39,6 +39,10 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
+            <column name="user_profile_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
             <column name="name" type="TEXT">
                 <constraints nullable="false"/>
             </column>
@@ -51,6 +55,10 @@
         <createTable tableName="message">
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="chat_id" type="UUID">
+                <constraints nullable="false"/>
             </column>
 
             <column name="text" type="TEXT">
@@ -77,13 +85,13 @@
         </createTable>
 
         <addForeignKeyConstraint baseTableName="chat"
-                                 baseColumnNames="id"
+                                 baseColumnNames="user_profile_id"
                                  constraintName="fk_user_chat"
                                  referencedTableName="user_profile"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="message"
-                                 baseColumnNames="id"
+                                 baseColumnNames="chat_id"
                                  constraintName="fk_chat_message"
                                  referencedTableName="chat"
                                  referencedColumnNames="id"/>
