@@ -2,14 +2,19 @@ spring:
   application:
     name: Chatbot
   datasource:
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5434/chat-bot}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5434}/${POSTGRES_DB:chat-bot}
     username: ${POSTGRES_USER:admin}
     password: ${POSTGRES_PASSWORD:admin}
   jpa:
     hibernate:
       ddl-auto: update
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
   jackson:
     time-zone: Europe/Warsaw
+  config:
+    import: file:./local/.env[.properties]
 app:
   security:
     access-secret: ${JWT_ACCESS_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333}
