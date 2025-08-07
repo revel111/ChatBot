@@ -43,7 +43,12 @@ public class AuthConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**")
+                        .permitAll()
                         .requestMatchers("/api/messages/**").authenticated()
                         .requestMatchers("/api/user-profile/**").authenticated()
                         .requestMatchers("/api/chats/**").authenticated())

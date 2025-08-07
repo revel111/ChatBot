@@ -15,6 +15,11 @@ spring:
     time-zone: Europe/Warsaw
   config:
     import: file:./local/.env[.properties]
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
 app:
   security:
     access-secret: ${JWT_ACCESS_SECRET:VERYSECRETPOXXUYBESTSECRETEVERKNOWN2HUMANITY333}
@@ -24,7 +29,7 @@ app:
 langchain4j:
   open-ai:
     chat-model:
-#    streaming-chat-model:
+      #    streaming-chat-model:
       api-key: ${OPENAI_API_KEY}
       model-name: gpt-4o
       log-requests: true

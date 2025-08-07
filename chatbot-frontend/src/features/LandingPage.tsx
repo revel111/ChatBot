@@ -1,9 +1,7 @@
-function LandingPage() {
+export default function LandingPage() {
     return (
         <>
             Chatbot
         </>
     );
 }
-
-export default LandingPage;
